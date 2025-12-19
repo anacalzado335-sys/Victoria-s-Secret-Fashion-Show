@@ -8,9 +8,8 @@ class Resource: # maneja los recursos
      def __repr__(self):
          return f"Recursos necesarios: {self.name}, {self.type}"  
    
-     
        #función para cargar datos del json
-     def load_resources_from_json(file_path=  "resources.json") -> list['Resource']:
+def load_resources_from_json(file_path=  "resources.json") -> list['Resource']:
          #lee el json y devuelve una lista de objetos resource
          try:
              with open(file_path, 'r') as file:

@@ -2,14 +2,18 @@ import json
 import os
 from models import Event, load_events_from_json
 from resource import Resource, load_resources_from_json
+from clothing import Clothes, loads_clothes_from_json
 from datetime import datetime, timedelta
 
 class Planner  :
-    def __init__(self, resource_inventory : list, events_calendary : list):
+    def __init__(self, resource_inventory : list, events_calendary : list, events_clothes : list):
         self.resource_inventory = resource_inventory #lista de los recursos disponibles
-        self.events_calendary = events_calendary #lista  de eventos planificados   
+        self.events_calendary = events_calendary #lista  de eventos planificados 
+        self.events_clothes = events_clothes   #lista de los diferentes vestuarios y accesorios
         
     def add_event(self, event):
         return self.events_calendary.append(event)
     def add_resource(self, resource):
         return self.resource_inventory.append(resource)
+    def add_clothes(self, clothes):
+        return self.events_clothes.append(clothes)
