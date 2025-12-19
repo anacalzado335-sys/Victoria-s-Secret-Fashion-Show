@@ -11,9 +11,12 @@ class Event : # representa un evento planificado
          
      def duration(self) -> timedelta: #duración del evento
          return self.end - self.begin 
+    
      def __repr__(self):
          return f"Evento(nombre : '{self.name}',\n comienza: {self.begin.strftime("%Y-%m-%d %H:%M:%S")}, \n termina: {self.end.strftime("%Y-%m-%d %H:%M:%S")})"
-     def load_events_from_json(file_path = "events.json") -> list['Event'] :
+
+
+def load_events_from_json(file_path = "events.json") -> list['Event'] :
          try:
              with open(file_path, 'r') as file :
                  data = json.load(file)

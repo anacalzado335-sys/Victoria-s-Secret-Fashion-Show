@@ -1,7 +1,7 @@
 import json 
 import os
-from models import Event
-from resource import Resource
+from models import Event, load_events_from_json
+from resource import Resource, load_resources_from_json
 from datetime import datetime, timedelta
 
 class Planner  :
