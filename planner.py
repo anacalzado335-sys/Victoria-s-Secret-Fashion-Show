@@ -17,3 +17,10 @@ class Planner  :
         return self.resource_inventory.append(resource)
     def add_clothes(self, clothes):
         return self.events_clothes.append(clothes)
+    
+    #relacionar los datos del JSON dentro del planner
+    def find_event_by_Id(self, event_id):
+        for event in self.events_calendary:
+            if event.id == event_id:
+                return event
+        return None    

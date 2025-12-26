@@ -10,7 +10,7 @@ def Main() :
     resources = load_resources_from_json("resources.json")
     
     #instanciar el planificador
-    my_planner = Planner(events,resources,clothes)
+    my_planner = Planner(resources,events,clothes)
     
     print("------ CARGANDO LOS EVENTOS DE VICTORIA'S SECRET -------")
     print(f"Eventos planificados: {len(my_planner.events_calendary)}")
