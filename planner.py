@@ -24,3 +24,10 @@ class Planner  :
             if event.id == event_id:
                 return event
         return None    
+    
+    def assign_models_automatically(self):
+        for event in self.events_calendary:
+            for resource in self.resource_inventory:
+                if resource.type == 'Models':
+                    event.assigned_resources.append(resource)
+        print(f"Se han asigando las modelos a los {len(self.events_calendary)} eventos")            
