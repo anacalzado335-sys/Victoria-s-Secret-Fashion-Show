@@ -1,8 +1,8 @@
 import json 
 import os
 from models import Event, load_events_from_json
-from resource import Resource, load_resources_from_json
-from clothing import Clothes, loads_clothes_from_json
+from resources_manager import Resource, load_resources_from_json
+from clothing import Clothes, load_clothes_from_json
 from datetime import datetime, timedelta
 
 class Planner  :
