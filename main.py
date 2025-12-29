@@ -20,10 +20,16 @@ def Main() :
     print(f"Los recursos necesarios para los eventos son : {len(my_planner.resource_inventory)}")
     
     if my_planner.events_calendary:
-        first_event = my_planner.events_calendary[0]
-        print(f"\nModelos en {first_event.name}:")
-        for m in first_event.assigned_resources:
-            print(f"- {m.name}")
-
+         for event  in my_planner.events_calendary:
+             print(f"\nEvento : {event.name} ") #imprime el nombre del evento
+             print("Modelos asignadas :")
+             
+             #recorrer la lista de las 
+             if event.assigned_resources:
+                 for m in event.assigned_resources:
+                     print(f" - {m.name} ")
+             else:
+                 print("No hay modelos asignadas aún")
+                         
 if __name__ == "__main__":
     Main()
