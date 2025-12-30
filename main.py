@@ -11,25 +11,10 @@ def Main() :
     
     #instanciar el planificador
     my_planner = Planner(resources,events,clothes)
-    
     #llamado a la automatizacion
     my_planner.assign_models_automatically()
-    
-    print("------ CARGANDO LOS EVENTOS DE VICTORIA'S SECRET -------")
-    print(f"Eventos planificados: {len(my_planner.events_calendary)}")
-    print(f"Los recursos necesarios para los eventos son : {len(my_planner.resource_inventory)}")
-    
-    if my_planner.events_calendary:
-         for event  in my_planner.events_calendary:
-             print(f"\nEvento : {event.name} ") #imprime el nombre del evento
-             print("Modelos asignadas :")
-             
-             #recorrer la lista de las 
-             if event.assigned_resources:
-                 for m in event.assigned_resources:
-                     print(f" - {m.name} ")
-             else:
-                 print("No hay modelos asignadas aún")
+    #imprimir la lógica 
+    my_planner.show_report()
                          
 if __name__ == "__main__":
     Main()

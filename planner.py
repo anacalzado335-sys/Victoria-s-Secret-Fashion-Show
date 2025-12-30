@@ -31,3 +31,23 @@ class Planner  :
                 if resource.type == 'Models':
                     event.assigned_resources.append(resource)
         print(f"Se han asigando las modelos a los {len(self.events_calendary)} eventos")            
+    
+    def show_report(self):
+         print("------ CARGANDO LOS EVENTOS DE VICTORIA'S SECRET -------")
+         print(f"Eventos planificados: {len(self.events_calendary)}")
+         print(f"Los recursos necesarios para los eventos son : {len(self.resource_inventory)}")
+    
+         if not self.events_calendary:
+             print("No hay eventos programados")
+             return
+         
+         for event  in self.events_calendary:
+             print(f"\nEvento : {event.name} ") #imprime el nombre del evento
+             print("Modelos asignadas :")
+             
+             #recorrer la lista de las modelos
+             if event.assigned_resources:
+                 for m in event.assigned_resources:
+                     print(f" - {m.name} ")
+             else:
+                 print("No hay modelos asignadas aún")    
