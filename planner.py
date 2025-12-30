@@ -23,14 +23,29 @@ class Planner  :
         for event in self.events_calendary:
             if event.id == event_id:
                 return event
-        return None    
+        return None  
+    
+    def is_available(self, model, new_event):
+        #Verifica si hay conflicto con las modelos y el horario
+        for exist_event in self.events_calendary:
+            if model in exist_event.assigned_resources:
+                if new_event.begin < exist_event.end and exist_event.begin < new_event.end:
+                   return False #Existe un choque de horario entre las modelos
+        return True     #no hay choque de horario y están libres      
     
     def assign_models_automatically(self):
+        #asigna las modelos si y solo si no tienen conflictos con las fechas
+        assigned_counts = 0
         for event in self.events_calendary:
             for resource in self.resource_inventory:
                 if resource.type == 'Models':
-                    event.assigned_resources.append(resource)
+                    #verificar disponibilidad antes de asignar
+                    if self.is_available(resource, event) :
+                       event.assigned_resources.append(resource)
+                       assigned_counts += 1
         print(f"Se han asigando las modelos a los {len(self.events_calendary)} eventos")            
+    
+   
     
     def show_report(self):
          print("------ CARGANDO LOS EVENTOS DE VICTORIA'S SECRET -------")
