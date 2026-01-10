@@ -33,19 +33,45 @@ class Planner  :
                    return False #Existe un choque de horario entre las modelos
         return True     #no hay choque de horario y están libres      
     
+    def validate_inclusion(self, resource_to_assign, clothes_to_assign):
+        model = False
+        accesories = False 
+        
+        #busco si hay modelo
+        for r in resource_to_assign:
+            if r.type.strip() == 'Models':
+                model = True
+                break #ya encontre la modelo y paro
+            
+        #busco si hay un accesorio en la ropa
+        for c in clothes_to_assign:
+            if c.category.strip() == 'Accesorios':
+                accesories = True
+                break #ya encontre la ropa
+            
+        if model and not accesories:
+            return False, "Error : Si asignas una modelo debes incluir accesorios"        
+        return True , "Validación exitosa"
+    
+    
     def assign_models_automatically(self):
-        #asigna las modelos si y solo si no tienen conflictos con las fechas
-        assigned_counts = 0
         for event in self.events_calendary:
             for resource in self.resource_inventory:
-                if resource.type == 'Models':
+                if resource.type.strip() == 'Models':
+                    #llamar a la validación antes de confirmar la asignación
+                    is_valid, message = self.validate_inclusion([resource], self.events_clothes)
+                    
                     #verificar disponibilidad antes de asignar
-                    if self.is_available(resource, event) :
-                       event.assigned_resources.append(resource)
-                       assigned_counts += 1
-        print(f"Se han asigando las modelos a los {len(self.events_calendary)} eventos")            
-    
-   
+                    if is_valid :
+                        if self.is_available(resource, event) and is_valid :
+                            #evitar las duplicaciones
+                            if resource not in event.assigned_resources:
+                                event.assigned_resources.append(resource)
+                            else:
+                                print(f"Conflicto de horario para {resource.name} en el evento {event.name}")
+                        else:        
+                         print(f"No se pudo asignar a {resource.name }: {message}")
+                  
     
     def show_report(self):
          print("------ CARGANDO LOS EVENTOS DE VICTORIA'S SECRET -------")
@@ -58,6 +84,7 @@ class Planner  :
          
          for event  in self.events_calendary:
              print(f"\nEvento : {event.name} ") #imprime el nombre del evento
+             print(f"Horario : {event.begin} - {event.end}")
              print("Modelos asignadas :")
              
              #recorrer la lista de las modelos
