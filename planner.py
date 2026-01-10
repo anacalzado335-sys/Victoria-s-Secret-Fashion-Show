@@ -58,20 +58,23 @@ class Planner  :
         for event in self.events_calendary:
             for resource in self.resource_inventory:
                 if resource.type.strip() == 'Models':
-                    #llamar a la validación antes de confirmar la asignación
+                    #validar la inclusión de accesorios
                     is_valid, message = self.validate_inclusion([resource], self.events_clothes)
                     
                     #verificar disponibilidad antes de asignar
                     if is_valid :
-                        if self.is_available(resource, event) and is_valid :
+                        if  not is_valid :
+                            print(f"No se pudo asignar a {event.name} : {message}")
+                            continue
+                        
+                        #verificar disponibilidad de horarios
+                        if self.is_available(resource,event):
                             #evitar las duplicaciones
                             if resource not in event.assigned_resources:
-                                event.assigned_resources.append(resource)
-                            else:
-                                print(f"Conflicto de horario para {resource.name} en el evento {event.name}")
-                        else:        
-                         print(f"No se pudo asignar a {resource.name }: {message}")
-                  
+                                event.assigned_resources.append(resource)      
+                        else:   
+                              print(f"Conflicto de horario para {resource.name} en el evento {event.name}")     
+                            
     
     def show_report(self):
          print("------ CARGANDO LOS EVENTOS DE VICTORIA'S SECRET -------")
