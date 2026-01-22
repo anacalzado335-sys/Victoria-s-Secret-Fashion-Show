@@ -25,35 +25,33 @@ class Planner  :
                 return event
         return None  
     
-    def is_available(self, model, new_event):
-        #Verifica si hay conflicto con las modelos y el horario
+    def is_available(self, resource, new_event):
+        #Verifica si hay conflicto  de horario tanto para lugares como para las modelos
         for exist_event in self.events_calendary:
-            if model in exist_event.assigned_resources:
+            #verificar si el recurso está asignado a un evento existente
+            resource_name = [r.name for r in exist_event.assigned_resources]
+            
+            if resource.name in resource_name:
+                
                 if new_event.begin < exist_event.end and exist_event.begin < new_event.end:
                    return False #Existe un choque de horario entre las modelos
         return True     #no hay choque de horario y están libres      
     
-    def validate_inclusion(self, resource_to_assign, clothes_to_assign):
-        model = False
-        accesories = False 
+    def validate_exclusion(self, resource_to_assign, clothes_to_assign):
+        clothes_name = [c.name.lower().strip() for c in clothes_to_assign]
+        resources_name = [r.name.strip() for r in resource_to_assign]
         
-        #busco si hay modelo
-        for r in resource_to_assign:
-            if r.type.strip() == 'Models':
-                model = True
-                break #ya encontre la modelo y paro
-            
-        #busco si hay un accesorio en la ropa
-        for c in clothes_to_assign:
-            if c.category.strip() == 'Accesorios':
-                accesories = True
-                break #ya encontre la ropa
-            
-        if model and not accesories:
-            return False, "Error : Si asignas una modelo debes incluir accesorios"        
-        return True , "Validación exitosa"
-    
-    
+        if "Grand Palais" in resources_name and "tenis " in clothes_name:
+            return False, "ERROR DE EXCLUSION: No se permiten tenis en el Grand Palais"
+        
+        #si es ropa interior no puedo usarla en la línea Pink por ejemplo
+        clothes_category = [c.category.strip() for c in clothes_to_assign]
+        if "Ropa Interior" in clothes_category and "juvenil" in clothes_name:
+            return False, "ERROR DE EXCLUSION: No mezcclar Ropa Interior con la Linea Pink"
+        
+        return True, "Validación exitosa"
+        
+        
     def assign_models_automatically(self):
         for event in self.events_calendary:
             for resource in self.resource_inventory:
