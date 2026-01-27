@@ -40,6 +40,7 @@ class Planner  :
     def validate_inclusion(self, resource_to_assign, clothes_to_assign):
         clothes_name = [c.name.lower().strip() for c in clothes_to_assign]
         resources_name = [r.name.strip() for r in resource_to_assign]
+        clothes_category = [c.category.strip() for c in clothes_to_assign]
         
         if "Grand Palais" in resources_name and "tenis " in clothes_name:
             return False, "ERROR DE EXCLUSION: No se permiten tenis en el Grand Palais"
@@ -49,6 +50,9 @@ class Planner  :
         if "Ropa Interior" in clothes_category and "juvenil" in clothes_name:
             return False, "ERROR DE EXCLUSION: No mezcclar Ropa Interior con la Linea Pink"
         
+        #Validación de categorías
+        if "Ropa Interior" in clothes_category and "juvenil" in clothes_name:
+            return False, "ERROR DE EXCLUSION: No mezclar Ropa Interior con la Linea Pink"
         return True, "Validación exitosa"
         
         
@@ -57,10 +61,10 @@ class Planner  :
             for resource in self.resource_inventory:
                 if resource.type.strip() == 'Models':
                     #validar la inclusión de accesorios
-                    is_valid, message = self.validate_inclusion([resource], self.events_clothes)
+                    is_valid, _ = self.validate_inclusion([resource], self.events_clothes)
                     
                     #verificar disponibilidad antes de asignar
-                    if is_valid  and self.is_available:
+                    if is_valid  and self.is_available(resource, event):
                             #evitar las duplicaciones
                         if resource not in event.assigned_resources:
                                 event.assigned_resources.append(resource)      

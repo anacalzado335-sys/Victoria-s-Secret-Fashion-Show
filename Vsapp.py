@@ -35,9 +35,14 @@ with st.sidebar.form("event_form"):
     end_date = st.date_input("Fecha de Fin", datetime.now())
     end_time = st.time_input("Hora de Fin")
     
-    # Selección de Recursos
+    # Selección de Recursos (Modelos y Lugares)
     resource_names = [r.name for r in resources]
     selected_resources = st.multiselect("Asignar Modelos y Lugares", resource_names)
+    
+    # ---- Selector de ropa ----
+    #un diccionario para mapear el nombre de la prenda con su objeto correspondiente
+    clothes_dict = {c.name: c for c in clothes}
+    selected_clothes_names = st.multiselect("Seleccionar Vestuarios/Accesorios", list(clothes_dict.keys()))
     
     submit_button = st.form_submit_button("Verificar y Planear")
 
@@ -51,9 +56,12 @@ if submit_button:
     else:
         # Buscar objetos recurso reales
         actual_resource_objects = [r for r in resources if r.name in selected_resources]
+        actual_clothes_objects = [clothes_dict[name] for name in selected_clothes_names]
+       
         new_event = Event(len(planner.events_calendary) + 1, event_name, 
                          dt_start.strftime("%Y-%m-%d %H:%M:%S"), 
                          dt_end.strftime("%Y-%m-%d %H:%M:%S"))
+        
         
         # Validación de Conflictos de horarios
         conflicts = []
@@ -65,13 +73,13 @@ if submit_button:
             st.error(f"Conflicto de horario: Los siguientes recursos ya están ocupados: {conflicts}")
         else:
             # VALIDACIÓN DE REGLAS (Inclusion/Exclusion)
-            is_valid, message = planner.validate_inclusion(actual_resource_objects, clothes)
+            is_valid, message = planner.validate_inclusion(actual_resource_objects, actual_clothes_objects)
             if not is_valid:
                 st.warning(message)
             else:
                 new_event.assigned_resources = actual_resource_objects
                 planner.add_event(new_event)
-                st.success(f"Event '{event_name}' successfully added.")
+                st.success(f"Evento '{event_name}' añadido exitosamente.")
 
 # --- CUERPO PRINCIPAL ---
 tabs = st.tabs(["📅 Calendario de Eventos", "🔍 Encontrar Disponibilidad", "💎 Recursos"])
