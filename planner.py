@@ -37,7 +37,7 @@ class Planner  :
                    return False #Existe un choque de horario entre las modelos
         return True     #no hay choque de horario y están libres      
     
-    def validate_exclusion(self, resource_to_assign, clothes_to_assign):
+    def validate_inclusion(self, resource_to_assign, clothes_to_assign):
         clothes_name = [c.name.lower().strip() for c in clothes_to_assign]
         resources_name = [r.name.strip() for r in resource_to_assign]
         
@@ -60,18 +60,11 @@ class Planner  :
                     is_valid, message = self.validate_inclusion([resource], self.events_clothes)
                     
                     #verificar disponibilidad antes de asignar
-                    if is_valid :
-                        if  not is_valid :
-                            print(f"No se pudo asignar a {event.name} : {message}")
-                            continue
-                        
-                        #verificar disponibilidad de horarios
-                        if self.is_available(resource,event):
+                    if is_valid  and self.is_available:
                             #evitar las duplicaciones
-                            if resource not in event.assigned_resources:
+                        if resource not in event.assigned_resources:
                                 event.assigned_resources.append(resource)      
-                        else:   
-                              print(f"Conflicto de horario para {resource.name} en el evento {event.name}")     
+                       
                             
     
     def show_report(self):

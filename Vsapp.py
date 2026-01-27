@@ -5,10 +5,10 @@ from clothing import load_clothes_from_json
 from models import load_events_from_json, Event
 from resources_manager import load_resources_from_json
 
-# Configuración de la página
+# Page configuration
 st.set_page_config(page_title="VS Fashion Show Planner", layout="wide")
 
-# Carga de datos inicial (usamos cache para no recargar cada vez)
+# Initial data loading (cached to prevent reloading on every interaction)
 @st.cache_data
 def get_initial_data():
     events = load_events_from_json("events.json")
@@ -18,90 +18,92 @@ def get_initial_data():
 
 events, clothes, resources = get_initial_data()
 
-# Inicializar el planificador en el estado de la sesión
+# Initialize the planner in the session state
 if 'planner' not in st.session_state:
     st.session_state.planner = Planner(resources, events, clothes)
 
 planner = st.session_state.planner
 
-st.title("👠 Victoria's Secret Event Planner")
+st.title("👠 Planificador de Eventos Victoria's Secret")
 
-# --- BARRA LATERAL: AGREGAR EVENTO ---
+# --- SIDEBAR: ADD NEW EVENT ---
 st.sidebar.header("Nuevo Evento")
-with st.sidebar.form("form_evento"):
-    nombre = st.text_input("Nombre del Desfile")
-    fecha_inicio = st.date_input("Fecha de Inicio", datetime.now())
-    hora_inicio = st.time_input("Hora de Inicio")
-    fecha_fin = st.date_input("Fecha de Fin", datetime.now())
-    hora_fin = st.time_input("Hora de Fin")
+with st.sidebar.form("event_form"):
+    event_name = st.text_input("Nombre del Desfile")
+    start_date = st.date_input("Fecha de Inicio", datetime.now())
+    start_time = st.time_input("Hora de Inicio")
+    end_date = st.date_input("Fecha de Fin", datetime.now())
+    end_time = st.time_input("Hora de Fin")
     
-    # Selección de recursos
-    res_nombres = [r.name for r in resources]
-    seleccionados = st.multiselect("Asignar Modelos y Lugares", res_nombres)
+    # Selección de Recursos
+    resource_names = [r.name for r in resources]
+    selected_resources = st.multiselect("Asignar Modelos y Lugares", resource_names)
     
-    enviar = st.form_submit_button("Verificar y Planificar")
+    submit_button = st.form_submit_button("Verificar y Planear")
 
-if enviar:
-    # Construir datetimes
-    dt_inicio = datetime.combine(fecha_inicio, hora_inicio)
-    dt_fin = datetime.combine(fecha_fin, hora_fin)
+if submit_button:
+    # Construcción de objetos datetime
+    dt_start = datetime.combine(start_date, start_time)
+    dt_end = datetime.combine(end_date, end_time)
     
-    if dt_inicio >= dt_fin:
+    if dt_start >= dt_end:
         st.error("La fecha de fin debe ser posterior a la de inicio.")
     else:
         # Buscar objetos recurso reales
-        objetos_res = [r for r in resources if r.name in seleccionados]
-        nuevo_ev = Event(len(planner.events_calendary) + 1, nombre, 
-                         dt_inicio.strftime("%Y-%m-%d %H:%M:%S"), 
-                         dt_fin.strftime("%Y-%m-%d %H:%M:%S"))
+        actual_resource_objects = [r for r in resources if r.name in selected_resources]
+        new_event = Event(len(planner.events_calendary) + 1, event_name, 
+                         dt_start.strftime("%Y-%m-%d %H:%M:%S"), 
+                         dt_end.strftime("%Y-%m-%d %H:%M:%S"))
         
-        # VALIDACIÓN DE CONFLICTOS
-        conflictos = []
-        for r in objetos_res:
-            if not planner.is_available(r, nuevo_ev):
-                conflictos.append(r.name)
+        # Validación de Conflictos de horarios
+        conflicts = []
+        for resource in actual_resource_objects:
+            if not planner.is_available(resource, new_event):
+                conflicts.append(resource.name)
         
-        if conflictos:
-            st.error(f"Conflicto de horario: Los recursos {conflictos} ya están ocupados.")
+        if conflicts:
+            st.error(f"Conflicto de horario: Los siguientes recursos ya están ocupados: {conflicts}")
         else:
-            # VALIDACIÓN DE REGLAS (Inclusión/Exclusión)
-            valido, msj = planner.validate_inclusion(objetos_res, clothes)
-            if not valido:
-                st.warning(msj)
+            # VALIDACIÓN DE REGLAS (Inclusion/Exclusion)
+            is_valid, message = planner.validate_inclusion(actual_resource_objects, clothes)
+            if not is_valid:
+                st.warning(message)
             else:
-                nuevo_ev.assigned_resources = objetos_res
-                planner.add_event(nuevo_ev)
-                st.success(f"Evento '{nombre}' añadido con éxito.")
+                new_event.assigned_resources = actual_resource_objects
+                planner.add_event(new_event)
+                st.success(f"Event '{event_name}' successfully added.")
 
 # --- CUERPO PRINCIPAL ---
-tabs = st.tabs(["📅 Calendario de Eventos", "🔍 Buscar Hueco", "💎 Recursos"])
+tabs = st.tabs(["📅 Calendario de Eventos", "🔍 Encontrar Disponibilidad", "💎 Recursos"])
 
 with tabs[0]:
-    st.subheader("Eventos Planificados")
+    st.subheader("Eventos Programados")
     if not planner.events_calendary:
-        st.info("No hay eventos registrados.")
+        st.info("No hay eventos regristrados actualmente.")
     else:
-        for ev in planner.events_calendary:
-            with st.expander(f"{ev.name} | {ev.begin.strftime('%d %b, %H:%M')}"):
-                st.write(f"**Fin:** {ev.end}")
-                st.write("**Recursos:**")
-                for r in ev.assigned_resources:
-                    st.write(f"- {r.name} ({r.type})")
-                if st.button(f"Eliminar ID: {ev.id}", key=f"del_{ev.id}"):
-                    planner.events_calendary.remove(ev)
+        for event in planner.events_calendary:
+            with st.expander(f"{event.name} | {event.begin.strftime('%d %b, %H:%M')}"):
+                st.write(f"**Finaliza:** {event.end}")
+                st.write("**Recursos Asignados:**")
+                for res in event.assigned_resources:
+                    st.write(f"- {res.name} ({res.type})")
+                
+                # Using unique key for the delete button
+                if st.button(f"Eliminar ID: {event.id}", key=f"del_{event.id}"):
+                    planner.events_calendary.remove(event)
                     st.rerun()
 
 with tabs[1]:
     st.subheader("Asistente Inteligente")
     st.write("Esta herramienta busca el próximo espacio libre según tus restricciones.")
-    duracion_h = st.number_input("Duración estimada (horas)", 1, 48)
-    if st.button("Buscar primer hueco disponible"):
-        # Aquí llamarías a la función find_next_gap que definimos antes
+    duration_hours = st.number_input("Duración estimada (horas)", 1, 48)
+    if st.button("Buscar ell primer hueco disponible"):
+        # Placeholder for the find_next_gap logic
         st.info("Buscando el mejor horario sin conflictos...")
 
 with tabs[2]:
     st.subheader("Estado de Recursos")
-    tipo_res = st.selectbox("Filtrar por tipo", ["Models", "places"])
-    for r in resources:
-        if r.type.strip() == tipo_res:
-            st.write(f"📍 **{r.name}**")
+    resource_filter = st.selectbox("Filtrar por tipo", ["Models", "places"])
+    for res in resources:
+        if res.type.strip() == resource_filter:
+            st.write(f"📍 **{res.name}**")
