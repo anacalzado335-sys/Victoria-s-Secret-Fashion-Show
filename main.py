@@ -12,8 +12,6 @@ def Main() :
     #instanciar el planificador
     my_planner = Planner(resources,events,clothes)
     my_planner.assign_models_automatically()
-    #imprimir la lógica 
-    my_planner.show_report()
     
     print("\n--- Verificando Restricción de Exclusión ---")
     # Simulamos una lista de ropa prohibida

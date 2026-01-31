@@ -69,25 +69,30 @@ class Planner  :
                         if resource not in event.assigned_resources:
                                 event.assigned_resources.append(resource)      
                        
-                            
     
-    def show_report(self):
-         print("------ CARGANDO LOS EVENTOS DE VICTORIA'S SECRET -------")
-         print(f"Eventos planificados: {len(self.events_calendary)}")
-         print(f"Los recursos necesarios para los eventos son : {len(self.resource_inventory)}")
-    
-         if not self.events_calendary:
-             print("No hay eventos programados")
-             return
-         
-         for event  in self.events_calendary:
-             print(f"\nEvento : {event.name} ") #imprime el nombre del evento
-             print(f"Horario : {event.begin} - {event.end}")
-             print("Modelos asignadas :")
-             
-             #recorrer la lista de las modelos
-             if event.assigned_resources:
-                 for m in event.assigned_resources:
-                     print(f" - {m.name} ")
-             else:
-                 print("No hay modelos asignadas aún")    
+    def find_next_gap(self, duration_hours):
+        search_time = datetime.now()
+        
+        temp_list = []
+        for event in self.events_calendary:
+            temp_list.append((event.begin, event))
+          
+        #ordenar por fecha de inicio
+        temp_list.sort()
+        
+        gap_needed = timedelta(hours= duration_hours)
+        
+        for star_time , event in temp_list:
+            #ignorar eventis finalizados
+            if event.end < search_time:
+                continue
+            
+            free_space = event.begin - search_time
+            
+            if free_space >+ gap_needed:
+                return search_time
+            
+            search_time =  event.end
+            
+        return search_time       
+                               

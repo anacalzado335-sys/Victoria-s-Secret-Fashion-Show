@@ -103,12 +103,18 @@ with tabs[0]:
 
 with tabs[1]:
     st.subheader("Asistente Inteligente")
-    st.write("Esta herramienta busca el próximo espacio libre según tus restricciones.")
-    duration_hours = st.number_input("Duración estimada (horas)", 1, 48)
-    if st.button("Buscar ell primer hueco disponible"):
-        # Placeholder for the find_next_gap logic
-        st.info("Buscando el mejor horario sin conflictos...")
-
+    
+    #user elige la hora
+    hours = st.number_input("Horas necesarias para el desfile", 1, 24, 2)
+    
+    if st.button("Buscar próximo espacio"):
+        gap = planner.find_next_gap(hours)
+        
+        st.success(f"📍 Próximo hueco disponible:")
+        st.info(f"Fecha: {gap.strftime('%d de %B, %Y')}")
+        st.info(f"Hora: {gap.strftime('%H:%M %p')}")
+        
+        
 with tabs[2]:
     st.subheader("Estado de Recursos")
     resource_filter = st.selectbox("Filtrar por tipo", ["Models", "places"])
