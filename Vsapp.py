@@ -83,6 +83,7 @@ if submit_button:
             else:
                 new_event.assigned_resources = actual_resource_objects
                 planner.add_event(new_event)
+                planner.save_to_json()
                 st.success(f"Evento '{event_name}' añadido exitosamente.")
 
 # --- CUERPO PRINCIPAL ---
@@ -103,6 +104,7 @@ with tabs[0]:
                 # Using unique key for the delete button
                 if st.button(f"Eliminar ID: {event.id}", key=f"del_{event.id}"):
                     planner.events_calendary.remove(event)
+                    planner.save_to_json()
                     st.rerun()
                     
 

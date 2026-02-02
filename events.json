@@ -1,26 +1,26 @@
 [
     {
         "id": 1,
-        "name": "Victoria's Sectret Fashion Show Underwear's Season", 
-        "begin": "2025-09-24 20:00:00 ", 
-        "end": "2025-09-27 22:00:00 "
-    }, 
+        "name": "Victoria's Sectret Fashion Show Underwear's Season",
+        "begin": "2025-09-24 20:00:00",
+        "end": "2025-09-27 22:00:00"
+    },
     {
-        "id": 2, 
-        "name": "Victoria's Secret Fashion Show Autum Season", 
-        "begin": "2025-09-25 10:00:00 ", 
-        "end": "2025-10-05 19:00:00 "
-    }, 
+        "id": 2,
+        "name": "Victoria's Secret Fashion Show Autum Season",
+        "begin": "2025-09-25 10:00:00",
+        "end": "2025-10-05 19:00:00"
+    },
     {
-        "id": 3, 
-        "name": "The Victoria's Secret Fashion Show: Angels in Paris", 
+        "id": 3,
+        "name": "The Victoria's Secret Fashion Show: Angels in Paris",
         "begin": "2025-10-04 19:00:00",
-         "end": "2025-10-07 23:00:00"
-    }, 
+        "end": "2025-10-07 23:00:00"
+    },
     {
         "id": 4,
-        "name": "The Victoria's Secret Fashion Show: Glam Royale,Floral Destiny", 
-        "begin": "2025-10-06 10:00:00", 
+        "name": "The Victoria's Secret Fashion Show: Glam Royale,Floral Destiny",
+        "begin": "2025-10-06 10:00:00",
         "end": "2025-10-06 22:00:00"
     }
 ]

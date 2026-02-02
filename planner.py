@@ -25,10 +25,42 @@ class Planner  :
                 return event
         return None  
     
+    #guardar lo nuevo que se cree
+    def save_to_json(self, file_path= "events.json"):
+        data_to_save = []
+        for event in self.events_calendary:
+            data_to_save.append({
+                "id": event.id,
+                "name" : event.name,
+                "begin": event.begin.strftime("%Y-%m-%d %H:%M:%S"),
+                "end": event.end.strftime("%Y-%m-%d %H:%M:%S")
+            })
+            
+        with open(file_path, 'w') as file:
+            json.dump(data_to_save, file, indent=4) 
+    
+    def save_resources(self, file_path = "resources.json"):
+         data = {}
+         for res in self.resource_inventory:
+             if res.type not in data:
+                  data[res.type] = []
+             data[res.type].append(res.name)
+         with open(file_path, 'w') as f:
+            json.dump(data, f, indent=4)
+
+    def save_clothes(self, file_path="clothes.json"):
+         data = {}
+         for c in self.events_clothes:
+             if c.category not in data:
+              data[c.category] = []
+         data[c.category].append(c.name)
+         with open(file_path, 'w') as f:
+             json.dump(data, f, indent=4)          
+    
     def is_available(self, resource, new_event):
-        #Verifica si hay conflicto  de horario tanto para lugares como para las modelos
+        #Verifica si hay conflicto  de horario 
         for exist_event in self.events_calendary:
-            #verificar si el recurso está asignado a un evento existente
+            #verificar si el recurso está asignado
             resource_name = [r.name for r in exist_event.assigned_resources]
             
             if resource.name in resource_name:
