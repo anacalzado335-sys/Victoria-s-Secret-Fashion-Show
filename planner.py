@@ -54,7 +54,18 @@ class Planner  :
         if "Ropa Interior" in clothes_category and "juvenil" in clothes_name:
             return False, "ERROR DE EXCLUSION: No mezclar Ropa Interior con la Linea Pink"
         return True, "Validación exitosa"
+     
+    def validate_co_requisite(self, resources_to_assign):
+        resources_types = [r.type.strip() for r in resources_to_assign]
+        resources_names = [r.name.strip() for r in resources_to_assign]
         
+        #rule: si hay modelo => hay lugar
+        if "Models" in resources_types:
+            if "places" not in resources_types:
+                return False , "ERROR :No puedes asiganr modelos sin lugares"
+            
+        return True , "Validación Exitosa"    
+            
         
     def assign_models_automatically(self):
         for event in self.events_calendary:

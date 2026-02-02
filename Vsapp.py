@@ -64,6 +64,10 @@ if submit_button:
         
         
         # Validación de Conflictos de horarios
+        is_valid_co ,msg_co = planner.validate_co_requisite(actual_resource_objects)
+        if not is_valid_co:
+            st.error(msg_co)
+            
         conflicts = []
         for resource in actual_resource_objects:
             if not planner.is_available(resource, new_event):
@@ -100,6 +104,7 @@ with tabs[0]:
                 if st.button(f"Eliminar ID: {event.id}", key=f"del_{event.id}"):
                     planner.events_calendary.remove(event)
                     st.rerun()
+                    
 
 with tabs[1]:
     st.subheader("Asistente Inteligente")
