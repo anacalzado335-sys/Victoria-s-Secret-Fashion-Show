@@ -8,20 +8,13 @@ from resources_manager import load_resources_from_json
 # Page configuration
 st.set_page_config(page_title="VS Fashion Show Planner", layout="wide")
 
-# Initial data loading (cached to prevent reloading on every interaction)
-@st.cache_data
-def get_initial_data():
+if 'planner' not in st.session_state:
     events = load_events_from_json("events.json")
     clothes = load_clothes_from_json("clothes.json")
     resources = load_resources_from_json("resources.json")
-    return events, clothes, resources
 
-events, clothes, resources = get_initial_data()
-
-# Initialize the planner in the session state
-if 'planner' not in st.session_state:
     st.session_state.planner = Planner(resources, events, clothes)
-
+    
 planner = st.session_state.planner
 
 st.title("👠 Planificador de Eventos Victoria's Secret")
@@ -36,12 +29,12 @@ with st.sidebar.form("event_form"):
     end_time = st.time_input("Hora de Fin")
     
     # Selección de Recursos (Modelos y Lugares)
-    resource_names = [r.name for r in resources]
+    resource_names = [r.name for r in planner.resource_inventory]
     selected_resources = st.multiselect("Asignar Modelos y Lugares", resource_names)
     
     # ---- Selector de ropa ----
     #un diccionario para mapear el nombre de la prenda con su objeto correspondiente
-    clothes_dict = {c.name: c for c in clothes}
+    clothes_dict = {c.name: c for c in planner.events_clothes}
     selected_clothes_names = st.multiselect("Seleccionar Vestuarios/Accesorios", list(clothes_dict.keys()))
     
     submit_button = st.form_submit_button("Verificar y Planear")
@@ -55,7 +48,7 @@ if submit_button:
         st.error("La fecha de fin debe ser posterior a la de inicio.")
     else:
         # Buscar objetos recurso reales
-        actual_resource_objects = [r for r in resources if r.name in selected_resources]
+        actual_resource_objects = [r for r in planner.resource_inventory if r.name in selected_resources]
         actual_clothes_objects = [clothes_dict[name] for name in selected_clothes_names]
        
         new_event = Event(len(planner.events_calendary) + 1, event_name, 
@@ -125,6 +118,6 @@ with tabs[1]:
 with tabs[2]:
     st.subheader("Estado de Recursos")
     resource_filter = st.selectbox("Filtrar por tipo", ["Models", "places"])
-    for res in resources:
+    for res in planner.resource_inventory:
         if res.type.strip() == resource_filter:
             st.write(f"📍 **{res.name}**")

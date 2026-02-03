@@ -52,8 +52,8 @@ class Planner  :
          data = {}
          for c in self.events_clothes:
              if c.category not in data:
-              data[c.category] = []
-         data[c.category].append(c.name)
+                data[c.category] = []
+             data[c.category].append(c.name)
          with open(file_path, 'w') as f:
              json.dump(data, f, indent=4)          
     
@@ -74,7 +74,7 @@ class Planner  :
         resources_name = [r.name.strip() for r in resource_to_assign]
         clothes_category = [c.category.strip() for c in clothes_to_assign]
         
-        if "Grand Palais" in resources_name and "tenis " in clothes_name:
+        if "Grand Palais" in resources_name and "tenis" in clothes_name:
             return False, "ERROR DE EXCLUSION: No se permiten tenis en el Grand Palais"
         
         #si es ropa interior no puedo usarla en la línea Pink por ejemplo
@@ -132,7 +132,7 @@ class Planner  :
             
             free_space = event.begin - search_time
             
-            if free_space >+ gap_needed:
+            if free_space >= gap_needed:
                 return search_time
             
             search_time =  event.end
