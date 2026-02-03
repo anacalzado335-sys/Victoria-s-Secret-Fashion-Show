@@ -33,7 +33,9 @@ class Planner  :
                 "id": event.id,
                 "name" : event.name,
                 "begin": event.begin.strftime("%Y-%m-%d %H:%M:%S"),
-                "end": event.end.strftime("%Y-%m-%d %H:%M:%S")
+                "end": event.end.strftime("%Y-%m-%d %H:%M:%S"),
+                #name de los res asignados
+                "assigned_resources": [res.name for res in event.assigned_resources]
             })
             
         with open(file_path, 'w') as file:

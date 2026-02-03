@@ -12,7 +12,12 @@ if 'planner' not in st.session_state:
     events = load_events_from_json("events.json")
     clothes = load_clothes_from_json("clothes.json")
     resources = load_resources_from_json("resources.json")
-
+    
+    res_map = {r.name.strip(): r for r in resources}
+    for ev in events : 
+        ev.assigned_resources = [res_map[name.strip()] for name in ev.assigned_resources]
+        
+        
     st.session_state.planner = Planner(resources, events, clothes)
     
 planner = st.session_state.planner

@@ -32,7 +32,8 @@ def load_events_from_json(file_path = "events.json") -> list['Event'] :
                    id = item["id"],
                    name = item["name"],   
                    begin = item["begin"],
-                   end = item["end"]
+                   end = item["end"],
+                   assigned_resources= item.get("assigned_resources", [])
              )
              event_list.append(event_obj)
          return event_list        
