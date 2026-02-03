@@ -72,21 +72,16 @@ class Planner  :
         return True     #no hay choque de horario y están libres      
     
     def validate_inclusion(self, resource_to_assign, clothes_to_assign):
-        clothes_name = [c.name.lower().strip() for c in clothes_to_assign]
-        resources_name = [r.name.strip() for r in resource_to_assign]
-        clothes_category = [c.category.strip() for c in clothes_to_assign]
+        clothes_name = [c.name.strip().lower() for c in clothes_to_assign]
+        resources_name = [r.name.strip().lower() for r in resource_to_assign]
+        clothes_category = [c.category.strip().lower() for c in clothes_to_assign]
         
-        if "Grand Palais" in resources_name and "tenis" in clothes_name:
+        if "grand palais" in resources_name and "tenis" in clothes_name:
             return False, "ERROR DE EXCLUSION: No se permiten tenis en el Grand Palais"
         
-        #si es ropa interior no puedo usarla en la línea Pink por ejemplo
-        clothes_category = [c.category.strip() for c in clothes_to_assign]
-        if "Ropa Interior" in clothes_category and "juvenil" in clothes_name:
+        if "ropa interior" in clothes_category and "juvenil" in clothes_name:
             return False, "ERROR DE EXCLUSION: No mezcclar Ropa Interior con la Linea Pink"
         
-        #Validación de categorías
-        if "Ropa Interior" in clothes_category and "juvenil" in clothes_name:
-            return False, "ERROR DE EXCLUSION: No mezclar Ropa Interior con la Linea Pink"
         return True, "Validación exitosa"
      
     def validate_co_requisite(self, resources_to_assign):

@@ -19,10 +19,11 @@ def load_clothes_from_json(file_path):
     
     clothes_list = []
     for category, items  in data.items() :
+        clean_category = category.strip()
         for item_name in items:
             clothes_obj = Clothes(
               name = item_name.strip(),
-              category= category.strip()
+              category= clean_category
             )
             clothes_list.append(clothes_obj)
             

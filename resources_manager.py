@@ -1,7 +1,7 @@
 import json
 import os
 
-class Resource: # maneja los recursos 
+class Resource:  
      def __init__(self,name, type):
          self.name = name 
          self.type = type 
@@ -22,9 +22,9 @@ def load_resources_from_json(file_path=  "resources.json") -> list['Resource']:
          #iterara sobre las categorias 
          for category, items in data.items():
              if isinstance(items, list):
-                 #iterar sobre cada elemento de la lista de categorias 
+                 #iterar sobre cada categoria
                  for item_name in items:
-                     #instanciar Resource con el nombre del item ybla categoria
+                     #instanciar Resource con el item yla categoria
                      resource_obj = Resource(
                          name = item_name.strip(),
                          type = category 

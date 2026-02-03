@@ -15,7 +15,7 @@ if 'planner' not in st.session_state:
     
     res_map = {r.name.strip(): r for r in resources}
     for ev in events : 
-        ev.assigned_resources = [res_map[name.strip()] for name in ev.assigned_resources]
+        ev.assigned_resources = [res_map[name.strip()] for name in ev.assigned_resources if name.strip() in res_map]
         
         
     st.session_state.planner = Planner(resources, events, clothes)
