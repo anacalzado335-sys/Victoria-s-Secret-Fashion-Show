@@ -33,9 +33,11 @@ with st.sidebar.form("event_form"):
     end_time = st.time_input("Hora de Fin")
     
     # Selección de Recursos (Modelos y Lugares)
-    resource_names = [r.name for r in planner.resource_inventory]
-    selected_resources = st.multiselect("Asignar Modelos y Lugares", resource_names)
-    
+    models_name = [r.name for r in planner.resource_inventory if r.type.strip() == "Models"]
+    places_name = [r.name  for r in planner.resource_inventory if r.type.strip() == "places" ]
+     
+    selected_models = st.multiselect("Seleccionar Modelos", models_name)
+    selected_places = st.multiselect("Seleccionar Lugar", places_name)
     # ---- Selector de ropa ----
     clothes_items = {
         c.name: c for c in planner.events_clothes
@@ -68,7 +70,10 @@ if submit_button:
         st.error("La fecha de fin debe ser posterior a la de inicio.")
     else:
         # Buscar objetos recurso reales
-        actual_resource_objects = [r for r in planner.resource_inventory if r.name in selected_resources]
+        actual_resource_objects = [
+            r for r in planner.resource_inventory
+            if r.name in selected_models or r.name in  selected_places    
+        ]
         actual_clothes_objects = [clothes_items[n] for n in selected_clothes_names] + [shoes_items[n] for n in selected_shoes_names] +\
                                  [accesories_items[n] for n in selected_accesory_names]
         
@@ -85,6 +90,7 @@ if submit_button:
         
         # Validación de Conflictos de horarios
         is_valid_co ,msg_co = planner.validate_co_requisite(actual_resource_objects)
+        is_valid , message = planner.validate_inclusion(actual_resource_objects, actual_clothes_objects)
         if not is_valid_co:
             st.error(msg_co)
             
