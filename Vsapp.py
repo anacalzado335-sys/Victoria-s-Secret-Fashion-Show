@@ -69,10 +69,16 @@ if submit_button:
     else:
         # Buscar objetos recurso reales
         actual_resource_objects = [r for r in planner.resource_inventory if r.name in selected_resources]
-        actual_clothes_objects = [clothes_items[name] for name in selected_clothes_names] +\
-                                 [accesories_items[name] for name in selected_accesory_names]
-       
-        new_event = Event(len(planner.events_calendary) + 1, event_name, 
+        actual_clothes_objects = [clothes_items[n] for n in selected_clothes_names] + [shoes_items[n] for n in selected_shoes_names] +\
+                                 [accesories_items[n] for n in selected_accesory_names]
+        
+        if planner.events_calendary:
+            new_id = max([ev.id for ev in planner.events_calendary]) + 1
+        else :
+            new_id = 1    
+        new_event = Event(
+                         new_id, 
+                         event_name,
                          dt_start.strftime("%Y-%m-%d %H:%M:%S"), 
                          dt_end.strftime("%Y-%m-%d %H:%M:%S"))
         
