@@ -5,8 +5,8 @@ class Clothes :
             self.name = name 
             self.category = category
             
-      def __repr__(self):
-         return f"Prenda : {self.name} , Categoría : {self.category}"
+      def is_accesory(self):
+          return self.category.strip().lower() == "accesorios"
      
 #función encargada de cargar los datos del json    
 def load_clothes_from_json(file_path):

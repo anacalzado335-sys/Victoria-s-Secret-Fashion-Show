@@ -5,7 +5,7 @@ from clothing import load_clothes_from_json
 from models import load_events_from_json, Event
 from resources_manager import load_resources_from_json
 
-# Page configuration
+# Configuarción de la Página
 st.set_page_config(page_title="VS Fashion Show Planner", layout="wide")
 
 if 'planner' not in st.session_state:
@@ -15,8 +15,7 @@ if 'planner' not in st.session_state:
     
     res_map = {r.name.strip(): r for r in resources}
     for ev in events : 
-        ev.assigned_resources = [res_map[name.strip()] for name in ev.assigned_resources if name.strip() in res_map]
-        
+        ev.assigned_resources = [res_map[name.strip()] for name in ev.assigned_resources if name.strip() in res_map]   
         
     st.session_state.planner = Planner(resources, events, clothes)
     
@@ -38,9 +37,25 @@ with st.sidebar.form("event_form"):
     selected_resources = st.multiselect("Asignar Modelos y Lugares", resource_names)
     
     # ---- Selector de ropa ----
-    #un diccionario para mapear el nombre de la prenda con su objeto correspondiente
-    clothes_dict = {c.name: c for c in planner.events_clothes}
-    selected_clothes_names = st.multiselect("Seleccionar Vestuarios/Accesorios", list(clothes_dict.keys()))
+    clothes_items = {
+        c.name: c for c in planner.events_clothes
+        if c.category.strip().lower() not in ["accesorios", "calzado"]
+    }
+    
+    shoes_items = {
+        c.name: c for c in planner.events_clothes
+        if c.category.strip().lower() == "calzado"
+    }
+    
+    accesories_items = {
+        c.name : c for c in planner.events_clothes
+        if c.category.strip().lower() == "accesorios"
+    }
+    
+    selected_clothes_names = st.multiselect("Seleccionar Ropa (Interior/Pink)", list(clothes_items.keys()))
+    selected_shoes_names = st.multiselect("Seleccionar Calzado", list(shoes_items.keys()))
+    selected_accesory_names = st.multiselect("Seleccionar accesorios", list(accesories_items.keys()))
+    
     
     submit_button = st.form_submit_button("Verificar y Planear")
 
@@ -54,7 +69,8 @@ if submit_button:
     else:
         # Buscar objetos recurso reales
         actual_resource_objects = [r for r in planner.resource_inventory if r.name in selected_resources]
-        actual_clothes_objects = [clothes_dict[name] for name in selected_clothes_names]
+        actual_clothes_objects = [clothes_items[name] for name in selected_clothes_names] +\
+                                 [accesories_items[name] for name in selected_accesory_names]
        
         new_event = Event(len(planner.events_calendary) + 1, event_name, 
                          dt_start.strftime("%Y-%m-%d %H:%M:%S"), 
