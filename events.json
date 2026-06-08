@@ -26,15 +26,5 @@
         "begin": "2025-10-06 10:00:00",
         "end": "2025-10-06 22:00:00",
         "assigned_resources": []
-    },
-    {
-        "id": 5,
-        "name": "Pepe",
-        "begin": "2026-02-20 15:24:00",
-        "end": "2026-02-20 15:45:00",
-        "assigned_resources": [
-            "Adriana Lima",
-            "Grand Palais"
-        ]
     }
 ]

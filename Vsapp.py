@@ -74,7 +74,8 @@ if submit_button:
             r for r in planner.resource_inventory
             if r.name in selected_models or r.name in  selected_places    
         ]
-        actual_clothes_objects = [clothes_items[n] for n in selected_clothes_names] + [shoes_items[n] for n in selected_shoes_names] +\
+        actual_clothes_objects = [clothes_items[n] for n in selected_clothes_names] + \
+                                 [shoes_items[n] for n in selected_shoes_names] + \
                                  [accesories_items[n] for n in selected_accesory_names]
         
         if planner.events_calendary:
@@ -90,9 +91,13 @@ if submit_button:
         
         # Validación de Conflictos de horarios
         is_valid_co ,msg_co = planner.validate_co_requisite(actual_resource_objects)
-        is_valid , message = planner.validate_inclusion(actual_resource_objects, actual_clothes_objects)
+        is_valid_inc , msg_inc = planner.validate_inclusion(actual_resource_objects, actual_clothes_objects)
         if not is_valid_co:
             st.error(msg_co)
+        elif not is_valid_inc:
+            st.error(msg_inc) 
+        else :
+            conflicts = [res.name for res in actual_resource_objects if not planner.is_available(res, new_event)]       
             
         conflicts = []
         for resource in actual_resource_objects:
@@ -111,6 +116,7 @@ if submit_button:
                 planner.add_event(new_event)
                 planner.save_to_json()
                 st.success(f"Evento '{event_name}' añadido exitosamente.")
+                st.rerun()
 
 # --- CUERPO PRINCIPAL ---
 tabs = st.tabs(["📅 Calendario de Eventos", "🔍 Encontrar Disponibilidad", "💎 Recursos"])
