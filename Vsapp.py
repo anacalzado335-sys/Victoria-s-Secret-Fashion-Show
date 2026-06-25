@@ -145,8 +145,46 @@ with tabs[1]:
         
         
 with tabs[2]:
-    st.subheader("Estado de Recursos")
-    resource_filter = st.selectbox("Filtrar por tipo", ["Models", "places"])
-    for res in planner.resource_inventory:
-        if res.type.strip() == resource_filter:
-            st.write(f"📍 **{res.name}**")
+    st.subheader("💎 Agenda y  Estado de Recursos")
+    if not planner.resource_inventory:
+        st.info("No hay recursos registrados en el sistema.")
+    else: 
+        resource_names = [res.name for res in planner.resource_inventory]
+        #selector para el usuario
+        selected_resource_name = st.selectbox(
+            "Selecciona una Modelo o Lugar para ver su agenda detallada:", options=resource_names
+            )
+        
+        selected_resource_obj = next(
+            (r for r in planner.resource_inventory if r.name == selected_resource_name),
+            None
+        )
+        
+        if selected_resource_obj:
+            st.write(f"### Agenda para : **{selected_resource_obj.name}** ({selected_resource_obj.type})")
+            
+            resource_agenda =[]
+            for event in planner.events_calendary:
+                if any(res.name == selected_resource_obj.name for res in event.assigned_resources):
+                    resource_agenda.append(event)
+            
+            if not resource_agenda:
+                st.warning(f"Actualmente **{selected_resource_obj.name}** no tiene ningún desfile asignado")
+            else:
+                st.success(f"Se encontraron {len(resource_agenda)} evento(s) asignado(s):")
+                
+                for idx, ev in enumerate(resource_agenda, 1):
+                    with st.container(border=True):
+                        st.markdown(f"**{idx}. {ev.name}**")
+                        st.write(f"📅 **Inicio:** {ev.begin.strftime('%d %b %Y - %H:%M')}")
+                        st.write(f"🏁 **Fin:** {ev.end.strftime('%d %b %Y - %H:%M')}")
+                        
+                        #mostar con quien comparte pasarela
+                        companions = [r.name for r in ev.assigned_resources if r.name != selected_resource_obj.name]
+                        if companions:
+                            st.write(f"🔗 **Otros recursos en este evento:** {', '.join(companions)}")
+                             
+                        
+                              
+                     
+  
