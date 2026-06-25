@@ -1,22 +1,64 @@
 import streamlit as st
+import os
+import json
 from datetime import datetime
+
+from models import Event
 from planner import Planner
-from clothing import load_clothes_from_json
-from models import load_events_from_json, Event
+from resources_manager import Resource
+from clothing import Clothes
 from resources_manager import load_resources_from_json
+from clothing import load_clothes_from_json
+from models import load_events_from_json
+
 
 # Configuarción de la Página
 st.set_page_config(page_title="VS Fashion Show Planner", layout="wide")
 
 if 'planner' not in st.session_state:
-    events = load_events_from_json("events.json")
-    clothes = load_clothes_from_json("clothes.json")
-    resources = load_resources_from_json("resources.json")
+    database_file = "database.json"
     
-    res_map = {r.name.strip(): r for r in resources}
-    for ev in events : 
-        ev.assigned_resources = [res_map[name.strip()] for name in ev.assigned_resources if name.strip() in res_map]   
+    events = []
+    resources = []
+    clothes = []
+    
+    #comprobar si está unificado
+    if os.path.exists(database_file):
+        with open(database_file, 'r', encoding='utf-8') as f:
+            db = json.load(f)
         
+        #cargar e instanciar ropa
+        for category, items in db.get("clothes", {}).items():
+            for item_name in items:
+                clothes.append(Clothes(item_name.strip(), category.strip()))
+                
+        #cargar e instancar Recursos
+        for r_type, items in db.get("resources", {}).items():
+            for item_name in items:
+                resources.append(Resource(item_name.strip(), r_type.strip()))            
+        
+        #cargar e instanciar eventos
+        res_map = {r.name.strip(): r for r in resources}
+        for ev_data in db.get("events", []) : 
+            event_obj = Event (
+                id = ev_data["id"],
+                name = ev_data["name"],
+                begin = ev_data["begin"],
+                end = ev_data["end"]
+            )
+            event_obj.assigned_resources = [
+             res_map[name.strip()] for name in ev_data.get("assigned_resources",[]) 
+            if name.strip() in res_map
+            ]
+            events.append(event_obj)
+            
+    else:
+        st.info("Creando base de datos inicial a partir de los archivos JSON....")
+        resources = load_resources_from_json("resources.json")
+        clothes = load_clothes_from_json("clothes.json")
+        events = load_events_from_json("events.json")
+       
+               
     st.session_state.planner = Planner(resources, events, clothes)
     
 planner = st.session_state.planner

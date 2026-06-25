@@ -26,10 +26,10 @@ class Planner  :
         return None  
     
     #guardar lo nuevo que se cree
-    def save_to_json(self, file_path= "events.json"):
-        data_to_save = []
+    def save_to_json(self, file_path= "database.json"):
+        events_data = []
         for event in self.events_calendary:
-            data_to_save.append({
+            events_data.append({
                 "id": event.id,
                 "name" : event.name,
                 "begin": event.begin.strftime("%Y-%m-%d %H:%M:%S"),
@@ -37,27 +37,34 @@ class Planner  :
                 #name de los res asignados
                 "assigned_resources": [res.name for res in event.assigned_resources]
             })
+         #estructurar los recursos   
+        resources_data = {}
+        for r in self.resource_inventory:
+            r_type = r.type.strip()
+            if r_type not in resources_data:
+                resources_data[r_type] = []
+            if r.name.strip() not in resources_data[r_type]:
+                resources_data[r_type].append(r.name.strip())  
+                
+         #estructurar la Ropa
+        clothes_data = {}   
+        for c in self.events_clothes:
+            c_cat = c.category.strip()
+            if c_cat not in clothes_data:
+                clothes_data[c_cat] = []
+            if c.name.strip() not in clothes_data[c_cat]:
+                clothes_data[c_cat].append(c.name.strip())   
+                
+        single_database = {
+            "events": events_data,
+            "resources": resources_data,
+            "clothes": clothes_data
+        } 
+        
+        with open(file_path, 'w', encoding='utf-8') as file:
+            json.dump(single_database,file, indent=4, ensure_ascii=False)        
             
-        with open(file_path, 'w') as file:
-            json.dump(data_to_save, file, indent=4) 
-    
-    def save_resources(self, file_path = "resources.json"):
-         data = {}
-         for res in self.resource_inventory:
-             if res.type not in data:
-                  data[res.type] = []
-             data[res.type].append(res.name)
-         with open(file_path, 'w') as f:
-            json.dump(data, f, indent=4)
-
-    def save_clothes(self, file_path="clothes.json"):
-         data = {}
-         for c in self.events_clothes:
-             if c.category not in data:
-                data[c.category] = []
-             data[c.category].append(c.name)
-         with open(file_path, 'w') as f:
-             json.dump(data, f, indent=4)          
+                    
     
     def is_available(self, resource, new_event):
         #Verifica si hay conflicto  de horario 
@@ -117,7 +124,7 @@ class Planner  :
         temp_list.sort()
         
         gap_needed = timedelta(hours= duration_hours)
-        
+        6
         for star_time , event in temp_list:
             #ignorar eventis finalizados
             if event.end < search_time:
