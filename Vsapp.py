@@ -92,31 +92,21 @@ if submit_button:
         # Validación de Conflictos de horarios
         is_valid_co ,msg_co = planner.validate_co_requisite(actual_resource_objects)
         is_valid_inc , msg_inc = planner.validate_inclusion(actual_resource_objects, actual_clothes_objects)
+        conflicts = [res.name for res in actual_resource_objects if not planner.is_available(res, new_event)]   
+        
         if not is_valid_co:
             st.error(msg_co)
         elif not is_valid_inc:
             st.error(msg_inc) 
-        else :
-            conflicts = [res.name for res in actual_resource_objects if not planner.is_available(res, new_event)]       
+        elif conflicts:
+             st.error(f"Conflicto de horario: Los siguientes recursos ya están ocupados: {conflicts}")
+        else:        
             
-        conflicts = []
-        for resource in actual_resource_objects:
-            if not planner.is_available(resource, new_event):
-                conflicts.append(resource.name)
-        
-        if conflicts:
-            st.error(f"Conflicto de horario: Los siguientes recursos ya están ocupados: {conflicts}")
-        else:
-            # VALIDACIÓN DE REGLAS (Inclusion/Exclusion)
-            is_valid, message = planner.validate_inclusion(actual_resource_objects, actual_clothes_objects)
-            if not is_valid:
-                st.warning(message)
-            else:
-                new_event.assigned_resources = actual_resource_objects
-                planner.add_event(new_event)
-                planner.save_to_json()
-                st.success(f"Evento '{event_name}' añadido exitosamente.")
-                st.rerun()
+             new_event.assigned_resources = actual_resource_objects
+             planner.add_event(new_event)
+             planner.save_to_json()
+             st.success(f"Evento '{event_name}' añadido exitosamente.")
+             st.rerun()
 
 # --- CUERPO PRINCIPAL ---
 tabs = st.tabs(["📅 Calendario de Eventos", "🔍 Encontrar Disponibilidad", "💎 Recursos"])
