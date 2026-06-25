@@ -174,7 +174,7 @@ with tabs[1]:
     st.subheader("Asistente Inteligente")
     
     #user elige la hora
-    hours = st.number_input("Horas necesarias para el desfile", 1, 24, 2)
+    hours = st.number_input("Horas necesarias para el desfile")
     
     all_res_names = [r.name for r in planner.resource_inventory]
     selected_res_for_gap = st.multiselect("Selecciona las Modelos/Lugares requeridos para el hueco", all_res_names)
