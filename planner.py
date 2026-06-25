@@ -113,29 +113,43 @@ class Planner  :
                                 event.assigned_resources.append(resource)      
                        
     
-    def find_next_gap(self, duration_hours):
+    def find_next_gap(self, duration_hours, resources_to_assign):
         search_time = datetime.now()
+        gap_needed = timedelta(hours= duration_hours)
         
         temp_list = []
         for event in self.events_calendary:
-            temp_list.append((event.begin, event))
-          
+            temp_list.append((event.begin, event)) 
         #ordenar por fecha de inicio
         temp_list.sort()
         
-        gap_needed = timedelta(hours= duration_hours)
-        6
         for star_time , event in temp_list:
             #ignorar eventis finalizados
             if event.end < search_time:
                 continue
             
-            free_space = event.begin - search_time
+            inicio_str = search_time.strftime("%Y-%m-%d %H:%M:%S")
+            fin_str = (search_time + gap_needed).strftime("%Y-%m-%d %H:%M:%S")
             
-            if free_space >= gap_needed:
-                return search_time
+            simulated_event = Event(
+                0,
+                "Simulado",
+                search_time.strftime("%Y-%m-%d %H:%M:%S"), 
+                (search_time + gap_needed).strftime("%Y-%m-%d %H:%M:%S")
+                )
             
-            search_time =  event.end
+            resources_available = True
+            for res in resources_to_assign:
+                if not self.is_available(res, simulated_event):
+                    resources_available = False
+                    break
+                
+            if resources_available and (event.begin - search_time) >= gap_needed:
+                return search_time  
             
+            if event.end > search_time:
+                 search_time =  event.end
+                  
+             
         return search_time       
                                

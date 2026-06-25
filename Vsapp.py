@@ -176,14 +176,24 @@ with tabs[1]:
     #user elige la hora
     hours = st.number_input("Horas necesarias para el desfile", 1, 24, 2)
     
+    all_res_names = [r.name for r in planner.resource_inventory]
+    selected_res_for_gap = st.multiselect("Selecciona las Modelos/Lugares requeridos para el hueco", all_res_names)
+    
     if st.button("Buscar próximo espacio"):
-        gap = planner.find_next_gap(hours)
-        
-        st.success(f"📍 Próximo hueco disponible:")
-        st.info(f"Fecha: {gap.strftime('%d de %B, %Y')}")
-        st.info(f"Hora: {gap.strftime('%H:%M %p')}")
-        
-        
+        if selected_res_for_gap:
+           actual_res_objects = [
+                r for r in planner.resource_inventory if r.name in selected_res_for_gap
+            ]
+            
+           gap = planner.find_next_gap(hours, actual_res_objects)
+                
+           st.success(f"📍 Próximo hueco disponible para los recursos seleccionadps:")
+           st.info(f"Fecha: {gap.strftime('%d de %B, %Y')}")
+           st.info(f"Hora: {gap.strftime('%H:%M %p')}")
+        elif not selected_res_for_gap:
+            st.warning("Por favor, selecciona al menos un recurso (Modelo o Lugar)")
+    
+            
 with tabs[2]:
     st.subheader("💎 Agenda y  Estado de Recursos")
     if not planner.resource_inventory:
