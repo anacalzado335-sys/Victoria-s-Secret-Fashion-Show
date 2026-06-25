@@ -74,14 +74,12 @@ if submit_button:
             r for r in planner.resource_inventory
             if r.name in selected_models or r.name in  selected_places    
         ]
-        actual_clothes_objects = [clothes_items[n] for n in selected_clothes_names] + \
-                                 [shoes_items[n] for n in selected_shoes_names] + \
-                                 [accesories_items[n] for n in selected_accesory_names]
         
         if planner.events_calendary:
             new_id = max([ev.id for ev in planner.events_calendary]) + 1
         else :
-            new_id = 1    
+            new_id = 1   
+             
         new_event = Event(
                          new_id, 
                          event_name,
@@ -91,7 +89,7 @@ if submit_button:
         
         # Validación de Conflictos de horarios
         is_valid_co ,msg_co = planner.validate_co_requisite(actual_resource_objects)
-        is_valid_inc , msg_inc = planner.validate_inclusion(actual_resource_objects, actual_clothes_objects)
+        is_valid_inc , msg_inc = planner.validate_inclusion(actual_resource_objects)
         conflicts = [res.name for res in actual_resource_objects if not planner.is_available(res, new_event)]   
         
         if not is_valid_co:

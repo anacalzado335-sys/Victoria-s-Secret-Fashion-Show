@@ -70,42 +70,38 @@ class Planner  :
                 if new_event.begin < exist_event.end and exist_event.begin < new_event.end:
                    return False #Existe un choque de horario entre las modelos
         return True     #no hay choque de horario y están libres      
-    
-    def validate_inclusion(self, resource_to_assign, clothes_to_assign):
-        clothes_name = [c.name.strip().lower() for c in clothes_to_assign]
-        resources_name = [r.name.strip().lower() for r in resource_to_assign]
-        clothes_category = [c.category.strip().lower() for c in clothes_to_assign]
-        
-        if "grand palais" in resources_name and "tenis" in clothes_name:
-            return False, "ERROR DE EXCLUSION: No se permiten tenis en el Grand Palais"
-        
-        if "ropa interior" in clothes_category and "juvenil" in clothes_name:
-            return False, "ERROR DE EXCLUSION: No mezcclar Ropa Interior con la Linea Pink"
-        
-        return True, "Validación exitosa"
+
      
     def validate_co_requisite(self, resources_to_assign):
         resources_types = [r.type.strip() for r in resources_to_assign]
-        resources_names = [r.name.strip() for r in resources_to_assign]
         
         #rule: si hay modelo => hay lugar
         if "Models" in resources_types:
             if "places" not in resources_types:
-                return False , "ERROR :No puedes asiganr modelos sin lugares"
+                return False , "ERROR DE CO-REQUISITO :No puedes asiganr modelos sin lugares"
             
-        return True , "Validación Exitosa"    
-            
+        return True , "Validación Exitosa" 
+    
+    def validate_inclusion(self, resources_to_assign):
         
+        resources_names = [r.name.strip() for r in resources_to_assign]
+        
+        if "Grand Palais" in resources_names and "Naomi Cambell" in resources_names:
+            return False, "ERROR DE EXCLUSION: La modelo Naomi Cambell tiene exclusividad y no puede desfilar en Grand Palais"
+      
+        return True, "Validación exitosa"   
+            
     def assign_models_automatically(self):
+        #asigna modelos si no violan restricciones
         for event in self.events_calendary:
             for resource in self.resource_inventory:
                 if resource.type.strip() == 'Models':
+                    simulated_resources = event.assigned_resources + [resource]
                     #validar la inclusión de accesorios
-                    is_valid, _ = self.validate_inclusion([resource], self.events_clothes)
+                    is_exclusion_valid, _ = self.validate_inclusion(simulated_resources)
                     
                     #verificar disponibilidad antes de asignar
-                    if is_valid  and self.is_available(resource, event):
-                            #evitar las duplicaciones
+                    if is_exclusion_valid  and self.is_available(resource, event):
                         if resource not in event.assigned_resources:
                                 event.assigned_resources.append(resource)      
                        
