@@ -149,7 +149,7 @@ if submit_button:
              st.rerun()
 
 # --- CUERPO PRINCIPAL ---
-tabs = st.tabs(["📅 Calendario de Eventos", "🔍 Encontrar Disponibilidad", "💎 Recursos"])
+tabs = st.tabs(["📅 Calendario de Eventos", "🔍 Encontrar Disponibilidad Para Nuevos Eventos", "💎 Recursos"])
 
 with tabs[0]:
     st.subheader("Eventos Programados")
@@ -163,7 +163,7 @@ with tabs[0]:
                 for res in event.assigned_resources:
                     st.write(f"- {res.name} ({res.type})")
                 
-                # Using unique key for the delete button
+                 #boton de eliminar ID
                 if st.button(f"Eliminar ID: {event.id}", key=f"del_{event.id}"):
                     planner.events_calendary.remove(event)
                     planner.save_to_json()
@@ -174,10 +174,10 @@ with tabs[1]:
     st.subheader("Asistente Inteligente")
     
     #user elige la hora
-    hours = st.number_input("Horas necesarias para el desfile")
+    hours = st.number_input("Elección de horario para nuevo evento")
     
     all_res_names = [r.name for r in planner.resource_inventory]
-    selected_res_for_gap = st.multiselect("Selecciona las Modelos/Lugares requeridos para el hueco", all_res_names)
+    selected_res_for_gap = st.multiselect("Selecciona las Modelos/Lugares requeridos para el nuevo evento", all_res_names)
     
     if st.button("Buscar próximo espacio"):
         if selected_res_for_gap:
@@ -187,7 +187,7 @@ with tabs[1]:
             
            gap = planner.find_next_gap(hours, actual_res_objects)
                 
-           st.success(f"📍 Próximo hueco disponible para los recursos seleccionadps:")
+           st.success(f"📍 Próximo hueco disponible para los recursos seleccionados:")
            st.info(f"Fecha: {gap.strftime('%d de %B, %Y')}")
            st.info(f"Hora: {gap.strftime('%H:%M %p')}")
         elif not selected_res_for_gap:

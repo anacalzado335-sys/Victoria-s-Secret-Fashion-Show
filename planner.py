@@ -145,9 +145,12 @@ class Planner  :
                     break
                 
             if resources_available and (event.begin - search_time) >= gap_needed:
-                return search_time  
+                return search_time 
             
-            if event.end > search_time:
+            if not resources_available:
+                search_time = search_time + gap_needed + timedelta(days=1)
+            else: 
+                if event.end > search_time:
                  search_time =  event.end
                   
              
