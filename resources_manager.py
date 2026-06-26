@@ -31,3 +31,4 @@ def load_resources_from_json(file_path=  "resources.json") -> list['Resource']:
                      ) 
                      resource_list.append(resource_obj)
          return resource_list                
+     

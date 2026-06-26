@@ -235,6 +235,7 @@ with tabs[2]:
                             st.write(f"🔗 **Otros recursos en este evento:** {', '.join(companions)}")
                              
                         
+                        
                               
                      
   

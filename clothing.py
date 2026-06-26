@@ -29,4 +29,5 @@ def load_clothes_from_json(file_path):
             
     return clothes_list        
       
+      
                 
