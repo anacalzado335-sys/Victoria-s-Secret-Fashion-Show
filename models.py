@@ -2,13 +2,13 @@ import json
 from datetime import datetime, timedelta
 
 class Event : # representa un evento planificado
-     def __init__(self,id:int ,name : str, begin:str, end : str, assigned_resources = None):
+     def __init__(self,id:int ,name : str, begin:str, end : str, assigned_resources = None, assigned_clothes = None):
          self.id = id
          self.name = name
          self.begin = datetime.strptime(begin.strip(), "%Y-%m-%d %H:%M:%S") #aquí esas cosas solo reperesentan el dia , mes y año , lo mismo en los de abajo , eso solo es para que sean bjetos de datetime y sea mas facil trabajar con 6
          self.end = datetime.strptime(end.strip(), "%Y-%m-%d %H:%M:%S")
          self.assigned_resources = assigned_resources if assigned_resources is not None else  [] #Lista para guardar modelos y lugares
-         
+         self.assigned_clothes = assigned_clothes if assigned_clothes is not None else []
          
      def duration(self) -> timedelta: #duración del evento
          return self.end - self.begin 
@@ -34,6 +34,7 @@ def load_events_from_json(file_path = "events.json") -> list['Event'] :
                    begin = item["begin"],
                    end = item["end"],
                    assigned_resources= item.get("assigned_resources", [])
+                   
              )
              event_list.append(event_obj)
          return event_list        

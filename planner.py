@@ -35,7 +35,8 @@ class Planner  :
                 "begin": event.begin.strftime("%Y-%m-%d %H:%M:%S"),
                 "end": event.end.strftime("%Y-%m-%d %H:%M:%S"),
                 #name de los res asignados
-                "assigned_resources": [res.name for res in event.assigned_resources]
+                "assigned_resources": [res.name for res in event.assigned_resources],
+                "assigned_clothes": [c.name for c in event.assigned_clothes]
             })
          #estructurar los recursos   
         resources_data = {}
@@ -148,7 +149,7 @@ class Planner  :
                 return search_time 
             
             if not resources_available:
-                search_time = search_time + gap_needed + timedelta(days=1)
+                search_time = event.end
             else: 
                 if event.end > search_time:
                  search_time =  event.end

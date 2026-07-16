@@ -38,7 +38,9 @@ if 'planner' not in st.session_state:
                 resources.append(Resource(item_name.strip(), r_type.strip()))            
         
         #cargar e instanciar eventos
+        clothes_map = {c.name.strip(): c for c in clothes}
         res_map = {r.name.strip(): r for r in resources}
+        
         for ev_data in db.get("events", []) : 
             event_obj = Event (
                 id = ev_data["id"],
@@ -49,6 +51,10 @@ if 'planner' not in st.session_state:
             event_obj.assigned_resources = [
              res_map[name.strip()] for name in ev_data.get("assigned_resources",[]) 
             if name.strip() in res_map
+            ]
+            event_obj.assigned_clothes = [
+                clothes_map[name.strip()] for name in ev_data.get("assigned_clothes", [])
+                if name.strip() in clothes_map
             ]
             events.append(event_obj)
             
@@ -117,6 +123,12 @@ if submit_button:
             if r.name in selected_models or r.name in  selected_places    
         ]
         
+        total_selected_clothes_names = selected_clothes_names + selected_shoes_names + selected_accesory_names
+        actual_clothes_objects = [
+            c for c in planner.events_clothes
+            if c.name in total_selected_clothes_names
+        ]
+        
         if planner.events_calendary:
             new_id = max([ev.id for ev in planner.events_calendary]) + 1
         else :
@@ -126,7 +138,11 @@ if submit_button:
                          new_id, 
                          event_name,
                          dt_start.strftime("%Y-%m-%d %H:%M:%S"), 
-                         dt_end.strftime("%Y-%m-%d %H:%M:%S"))
+                         dt_end.strftime("%Y-%m-%d %H:%M:%S"),
+                         assigned_resources = actual_resource_objects,
+                         assigned_clothes = actual_clothes_objects
+                         )
+                
         
         
         # Validación de Conflictos de horarios
@@ -162,6 +178,12 @@ with tabs[0]:
                 st.write("**Recursos Asignados:**")
                 for res in event.assigned_resources:
                     st.write(f"- {res.name} ({res.type})")
+                st.write("**Vestuario y Accesorios:**")
+                if event.assigned_clothes:
+                    for clothe in event.assigned_clothes:
+                        st.write(f"-{clothe.name} *({clothe.category})*")
+                else:
+                    st.write("*No se ha asigando vestuario ni accesorios a este desfile*")        
                 
                  #boton de eliminar ID
                 if st.button(f"Eliminar ID: {event.id}", key=f"del_{event.id}"):
